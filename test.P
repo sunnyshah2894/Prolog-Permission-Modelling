@@ -9,6 +9,7 @@ roles(lead).
 roles(ed).
 roles(vp).
 roles(manager).
+roles(cto).
 
 perms(r).
 perms(w).
@@ -37,23 +38,31 @@ rp(manager, managerexecute).
 rh(ceo,lead).
 rh(ceo,ed).
 rh(ed,vp).
+rh(ed,cto).
 rh(ed,manager).
+
+authorized_permissions(X,Y) :- 
+	authorized_roles(X,Z),
+	authorized_permissions(Z,Y).
+
+authorized_permissions(X,Y) :- 
+	rp(X,Y).
+	
+	
+role_heirarchy(X,Y) :-
+	rh(X,Y).
+		
+		
+role_heirarchy(X,Y) :-
+	rh(X,Z),
+	role_heirarchy(Z,Y).
+	
 
 authorized_roles(X,Y) :-
 	ur(X,Y).
 	
 authorized_roles(X,Y) :-
 	ur(X,XR),
-	ur(Z,ZR),
-	rh(XR,ZR),
-	authorized_roles(Z,Y).
-	
-authorized_permissions(X,Y) :- 
-	authorized_roles(X,Z),
-	all_roles(Z,Y).
+	role_heirarchy(XR,Y).
 
-all_roles(X,Y) :- 
-	rp(X,Y).
-	
-	
 
