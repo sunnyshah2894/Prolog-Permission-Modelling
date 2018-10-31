@@ -38,8 +38,9 @@ rp(manager, managerexecute).
 rh(ceo,lead).
 rh(ceo,ed).
 rh(ceo,cto).
-/*rh(cto,ceo).*/
+rh(cto,ceo).
 rh(ed,vp).
+rh(vp,ed).
 rh(ed,cto).
 rh(ed,manager).
 
@@ -68,24 +69,26 @@ authorized_permissions(X,L) :-
 	sort(S,L).
 
 	
-role_heirarchy(X,Y) :-
+role_heirarchy(X,Y,S) :-
 	rh(X,Y).
 		
 		
-role_heirarchy(X,Y) :-
+role_heirarchy(X,Y,S) :-
 	rh(X,Z),
-	role_heirarchy(Z,Y).
+	not_member(Z,S),
+	role_heirarchy(Z,Y,[Z|S]).
 	
 
-auth_role(X,Y) :-
+auth_role(X,Y,S) :-
 	ur(X,Y).
-	
-auth_role(X,Y) :-
-	ur(X,XR),
-	role_heirarchy(XR,Y).
 
-authorized_roles(X,L) :-
-	findall( Y, auth_role(X, Y), S ),
+auth_role(X,Y,S) :-
+	ur(X,XR),
+	not_member(XR,S),
+	role_heirarchy(XR,Y,[XR|S]).
+
+authorized_roles(X,L) :-	
+	findall(Z,auth_role(X,Z,[]),S),
 	sort(S,L).
 	
 	
