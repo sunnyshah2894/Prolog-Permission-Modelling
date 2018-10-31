@@ -37,17 +37,36 @@ rp(manager, managerexecute).
 
 rh(ceo,lead).
 rh(ceo,ed).
+rh(ceo,cto).
+/*rh(cto,ceo).*/
 rh(ed,vp).
 rh(ed,cto).
 rh(ed,manager).
 
-authorized_permissions(X,Y) :- 
-	authorized_roles(X,Z),
-	authorized_permissions(Z,Y).
+member(X, [X|_]).
+member(X, [_|Ys]) :-
+	member(X,Ys).
 
-authorized_permissions(X,Y) :- 
+not_member(_, []) :- !.
+
+not_member(X, [Head|Tail]) :-
+     X \= Head,
+    not_member(X, Tail).
+	
+append([], Y, Y).
+append([H|X], Y, [H|Z]) :- append(X, Y, Z).
+
+auth_perm(X,Y) :- 
+	auth_role(X,Z),
+	auth_perm(Z,Y).
+
+auth_perm(X,Y) :- 
 	rp(X,Y).
 	
+authorized_permissions(X,L) :-
+	findall( Y, auth_perm(X, Y), S ),
+	sort(S,L).
+
 	
 role_heirarchy(X,Y) :-
 	rh(X,Y).
@@ -58,11 +77,29 @@ role_heirarchy(X,Y) :-
 	role_heirarchy(Z,Y).
 	
 
-authorized_roles(X,Y) :-
+auth_role(X,Y) :-
 	ur(X,Y).
 	
-authorized_roles(X,Y) :-
+auth_role(X,Y) :-
 	ur(X,XR),
 	role_heirarchy(XR,Y).
 
+authorized_roles(X,L) :-
+	findall( Y, auth_role(X, Y), S ),
+	sort(S,L).
+	
+	
+minRoles(S) :-
+	findall( Y , ur(X,Y), L ),
+	sort(L,L1), len(L1,S).
 
+len(X,Y):-
+	findlen(X,Y).
+	
+findlen([],X) :-
+	X is 0.
+
+findlen([X|Tail],Count) :-
+	findlen(Tail,Prev),
+	Count is Prev+1 .
+	
