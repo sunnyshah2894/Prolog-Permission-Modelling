@@ -12,17 +12,28 @@ not_member(X, [Head|Tail]) :-
 append([], Y, Y).
 append([H|X], Y, [H|Z]) :- append(X, Y, Z).
 
+flatten2([], []) :- !.
+flatten2([L|Ls], FlatL) :-
+    !,
+    flatten2(L, NewL),
+    flatten2(Ls, NewLs),
+    append(NewL, NewLs, FlatL).
+flatten2(L, [L]).
+
 
 auth_perm(X,Y) :- 
-	rp(X,Y).
+	findall(Z,rp(X,Z),Y).
+	
+get_permission_for_role([],[]).
 
-auth_perm(X,Y) :- 
-	auth_role(X,Z,[]),
-	auth_perm(Z,Y).
+get_permission_for_role([Role|Rest_role],[H|T]) :-
+	auth_perm(Role,H),
+	get_permission_for_role(Rest_role,T).
 	
 authorized_permissions(X,L) :-
-	findall( Y, auth_perm(X, Y), S ),
-	sort(S,L).
+	authorized_roles(X,ROLES_X),
+	get_permission_for_role(ROLES_X,L1),
+	flatten2(L1,L2),sort(L2,L).	
 
 get_all_users(User) :-
 	ur(User,_).
@@ -52,7 +63,6 @@ authorized_roles(X,L) :-
 	findall(Z,auth_role(X,Z,[]),S),
 	sort(S,L).
 
-	
 get_permission_for_user([],[]).
 
 get_permission_for_user([User|Rest_users],[H|T]) :-
