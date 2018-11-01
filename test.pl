@@ -6,7 +6,7 @@ roles(6).
 perms(10).
 
 
-/* 	Creating the User- pairs 
+/* 	Creating the User-Role pairs 
 	User-1 => -1
 	User-2 => -2
 	User-3 => -3
@@ -19,7 +19,7 @@ ur(3,3).
 ur(4,4).
 ur(5,5).
 
-/* 	Creating the -Permission pairs 
+/* 	Creating the Role-Permission pairs 
 	-1 => Permissions-1,2
 	-2 => Permissions-3,4
 	-3 => Permissions-7,8
@@ -37,7 +37,7 @@ rp(4,10).
 rp(5,5).
 rp(5,6).
 
-/* 	Creating the -Hierarchy pairs 
+/* 	Creating the Role Hierarchy pairs 
 	-1 ancestor of 2,3,4,6,5
 	-2 ancestor of 2,3,4,6,5
 	-3 ancestor of 2,3,4,6,5
@@ -53,12 +53,12 @@ rh(3,6).
 rh(6,1).
 
 
-% Output format
+% Output format samples
 % authorized_roles(1,List_s).
-% List_s = [1]
+% List_s = [1,2,3,4,5,6]
 
 % authorized_permissions(1,List_Permissions).
-% List_Permissions = [1]
+% List_Permissions = [1,2,3,4,5,6,7,8,9,10]
 
-% mins(S).
-% S = 2
+% minRoles(S).
+% S = 3
